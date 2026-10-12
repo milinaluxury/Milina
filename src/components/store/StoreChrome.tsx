@@ -43,7 +43,7 @@ export function StoreChrome({ children, categories, settings }: Props) {
   const contactEmail =
     (settings.contact_email as string) ?? "milina.luxury@gmail.com";
   const contactAddress =
-    (settings.contact_address as string) ?? "Algerie, Alger";
+    (settings.contact_address as string) ?? "Algérie — Livraison 58 wilayas";
   const aboutText =
     (settings.about_text as string) ??
     "Milina Luxury est votre boutique en ligne de prêt à porter pour femmes. Chez Milina Luxury, l'originalité est la seule règle. Révélez l'exception qui est en vous !";
@@ -63,10 +63,9 @@ export function StoreChrome({ children, categories, settings }: Props) {
   }
 
   const announcements = [
-    "Bienvenue à boutique Milina Luxury",
-    shippingNotice,
+    "Échanges possibles sous 24h",
     "Paiement à la livraison",
-    "Échanges possibles 24h",
+    shippingNotice,
   ];
 
   // Cycle announcements
@@ -85,24 +84,24 @@ export function StoreChrome({ children, categories, settings }: Props) {
 
   return (
     <div className="flex min-h-screen flex-col pb-[60px] md:pb-0" style={{ backgroundColor: 'var(--store-bg, #ffffff)' }}>
-      {/* Announcement bar */}
+      {/* Announcement bar - horizontal scrolling text */}
       <div className="border-b border-neutral-100" style={{ backgroundColor: 'var(--topbar-bg, #ffffff)' }}>
-        <div className="relative flex items-center justify-center overflow-hidden py-2.5">
+        <div className="relative flex items-center justify-center overflow-hidden py-2">
           {announcements.map((msg, i) => (
             <span
               key={msg}
-              className={`absolute inset-x-0 text-center text-base font-bold italic transition-all duration-500 ${
+              className={`absolute inset-x-0 text-center text-[11px] font-medium tracking-wider uppercase transition-all duration-500 ${
                 i === announcementIdx
                   ? "translate-y-0 opacity-100"
                   : "translate-y-4 opacity-0"
               }`}
-              style={{ fontFamily: "'Amiri', serif", color: 'var(--topbar-text, #000000)' }}
+              style={{ color: 'var(--topbar-text, #666666)' }}
             >
               {msg}
             </span>
           ))}
           {/* invisible spacer */}
-          <span className="invisible text-base font-bold italic" style={{ fontFamily: "'Amiri', serif" }}>
+          <span className="invisible text-[11px] font-medium tracking-wider uppercase">
             {announcements[0]}
           </span>
         </div>
@@ -234,31 +233,22 @@ export function StoreChrome({ children, categories, settings }: Props) {
       <main className="flex-1">{children}</main>
 
       {/* Features section */}
-      <section className="border-t border-black/5 px-4 py-12 md:px-8">
-        <div className="mx-auto grid max-w-6xl grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <section id="features-section" className="border-t border-black/5 px-4 py-14 md:px-8" style={{ backgroundColor: 'var(--features-bg, #ffffff)' }}>
+        <div className="mx-auto grid max-w-4xl grid-cols-1 gap-8 md:grid-cols-3">
           {[
             {
-              icon: <IconStore size={36} />,
-              title: "Livraison rapide",
-              desc: "Nous livrons rapidement partout en Algérie",
-            },
-            {
-              icon: <IconBag size={36} />,
+              icon: (
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="2" y="5" width="20" height="14" rx="2" />
+                  <line x1="2" y1="10" x2="22" y2="10" />
+                </svg>
+              ),
               title: "Paiement à la livraison",
               desc: "Payez en toute sécurité à la livraison",
             },
             {
               icon: (
-                <svg
-                  width="36"
-                  height="36"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M7.5 21 3 16.5l4.5-4.5" />
                   <path d="M16.5 3 21 7.5l-4.5 4.5" />
                   <line x1="3" y1="16.5" x2="16.5" y2="3" />
@@ -268,19 +258,23 @@ export function StoreChrome({ children, categories, settings }: Props) {
               desc: "Les échanges sont possibles dans les 24 heures",
             },
             {
-              icon: <IconMapPin size={36} />,
+              icon: (
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 10c0 7-8 13-8 13s-8-6-8-13a8 8 0 0 1 16 0z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
+              ),
               title: "Suivi de vos commandes",
               desc: "Nous suivons vos commandes jusqu'à la livraison",
             },
           ].map((f) => (
             <div
               key={f.title}
-              className="flex flex-col items-center rounded-2xl border border-black/5 p-6 text-center transition-smooth hover:shadow-sm"
-              style={{ backgroundColor: 'var(--features-bg, #ffffff)' }}
+              className="flex flex-col items-center text-center transition-smooth group"
             >
-              <div className="mb-4 text-black">{f.icon}</div>
-              <h3 className="text-base font-semibold text-black">{f.title}</h3>
-              <p className="mt-2 text-sm text-neutral-500">{f.desc}</p>
+              <div className="mb-4 text-neutral-700 transition-transform duration-300 group-hover:-translate-y-1">{f.icon}</div>
+              <h3 className="text-sm font-bold text-gray-900">{f.title}</h3>
+              <p className="mt-2 text-xs text-neutral-500 leading-relaxed max-w-xs">{f.desc}</p>
             </div>
           ))}
         </div>
@@ -289,7 +283,8 @@ export function StoreChrome({ children, categories, settings }: Props) {
       {/* Footer */}
       <footer className="border-t border-black/5" style={{ backgroundColor: 'var(--footer-bg, #ffffff)' }}>
         <div className="mx-auto max-w-4xl px-4 py-16 text-center md:px-8">
-          <div className="mb-8 flex justify-center">
+          {/* Footer Logo */}
+          <div className="mb-6 flex justify-center">
             {(settings.footer_logo_image as string) ? (
               <img 
                 src={settings.footer_logo_image as string} 
@@ -297,69 +292,85 @@ export function StoreChrome({ children, categories, settings }: Props) {
                 className={settings.footer_logo_size ? "w-auto object-contain" : "h-16 w-auto object-contain"} 
                 style={settings.footer_logo_size ? { height: `${settings.footer_logo_size}px` } : undefined}
               />
-            ) : null}
+            ) : (
+              <h3
+                className="text-xl font-bold uppercase tracking-[0.3em] text-gray-900"
+                style={{ fontFamily: "'Playfair Display', 'Amiri', serif" }}
+              >
+                Milina
+              </h3>
+            )}
           </div>
-          <h3 className="text-xs font-bold uppercase tracking-[0.4em] text-black">
-            À propos
-          </h3>
-          <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-neutral-600">
-            {aboutText}
+          
+          <p className="text-[11px] uppercase tracking-[0.3em] text-neutral-400 font-medium mb-8">
+            Boutique
           </p>
-          <Link
-            href="/cgu"
-            className="mt-6 inline-block font-bold text-sm text-neutral-500 underline-offset-4 hover:text-black hover:underline"
-          >
-            Conditions Générales De Vente
-          </Link>
 
-          <h3 className="mt-12 text-xs font-bold uppercase tracking-[0.4em] text-black">
-            Contact
-          </h3>
-          <div className="mt-6 flex flex-col items-center gap-3 text-sm text-neutral-700">
+          {/* Contact info */}
+          <div className="flex flex-col items-center gap-3 text-sm text-neutral-600">
             <a
               href={`mailto:${contactEmail}`}
-              className="inline-flex items-center gap-2 hover:text-black"
+              className="inline-flex items-center gap-2 hover:text-black transition-colors"
             >
-              <IconMail size={16} /> {contactEmail}
+              <IconMail size={14} /> {contactEmail}
             </a>
-            <div className="inline-flex items-center gap-2">
-              <IconMapPin size={16} /> {contactAddress}
-            </div>
-            <div className="mt-4 flex gap-3">
-              <a
-                href={instagramUrl}
-                target="_blank"
-                rel="noreferrer"
-                aria-label="Instagram"
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 text-white transition-smooth hover:scale-105"
-              >
-                <IconInstagram size={18} />
-              </a>
-              <a
-                href={facebookUrl}
-                target="_blank"
-                rel="noreferrer"
-                aria-label="Facebook"
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 text-white transition-smooth hover:scale-105"
-              >
-                <IconFacebook size={18} />
-              </a>
-              {tiktokUrl && (
-                <a
-                  href={tiktokUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  aria-label="TikTok"
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-black text-white transition-smooth hover:scale-105"
-                >
-                  <IconTikTok size={18} />
-                </a>
-              )}
+            <div className="inline-flex items-center gap-2 text-xs text-neutral-400">
+              <IconMapPin size={14} /> {contactAddress}
             </div>
           </div>
 
-          <div className="mt-12 border-t border-black/5 pt-6 text-xs font-bold text-black">
-            © {new Date().getFullYear()} Milina Luxury · Tous droits réservés
+          {/* Social icons */}
+          <div className="mt-6 flex justify-center gap-3">
+            <a
+              href={instagramUrl}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Instagram"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-neutral-200 text-neutral-600 transition-all hover:bg-black hover:text-white hover:border-black"
+            >
+              <IconInstagram size={16} />
+            </a>
+            <a
+              href={facebookUrl}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Facebook"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-neutral-200 text-neutral-600 transition-all hover:bg-black hover:text-white hover:border-black"
+            >
+              <IconFacebook size={16} />
+            </a>
+            {tiktokUrl && (
+              <a
+                href={tiktokUrl}
+                target="_blank"
+                rel="noreferrer"
+                aria-label="TikTok"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-neutral-200 text-neutral-600 transition-all hover:bg-black hover:text-white hover:border-black"
+              >
+                <IconTikTok size={16} />
+              </a>
+            )}
+          </div>
+
+          {/* Links */}
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-4 text-xs text-neutral-400">
+            <Link
+              href="/cgu"
+              className="hover:text-black transition-colors"
+            >
+              Conditions Générales De Vente
+            </Link>
+            <span>·</span>
+            <Link
+              href="/contact"
+              className="hover:text-black transition-colors"
+            >
+              Contact
+            </Link>
+          </div>
+
+          <div className="mt-8 border-t border-black/5 pt-6 text-[11px] text-neutral-400">
+            © {new Date().getFullYear()} Boutique Milina — Élégance · Raffinement · Exclusivité
           </div>
           <a
             href="https://www.instagram.com/ne__dev"

@@ -1,6 +1,7 @@
 import { getProducts, getAllSettings, getCategories } from "@/lib/data";
 import { Hero } from "@/components/store/Hero";
 import { ProductGrid } from "@/components/store/ProductGrid";
+import { BrandStats, Testimonials, FAQ, Newsletter } from "@/components/store/HomeSections";
 
 export const revalidate = 60;
 
@@ -36,6 +37,7 @@ export default async function HomePage() {
 
   return (
     <div>
+      {/* Hero Section */}
       {heroMedia.length > 0 && (
         <Hero
           title={heroTitle}
@@ -45,20 +47,34 @@ export default async function HomePage() {
           ctaHref="/"
         />
       )}
-      <section className="mx-auto max-w-7xl px-4 py-10 md:px-8 md:py-16">
-        <div className="mb-8 text-center">
-          <div className="typewriter-container">
-            <h2 
-              className="text-3xl font-bold italic tracking-tight text-gray-900 md:text-4xl"
-              style={{ fontFamily: "'Amiri', serif" }}
-            >
-              Tous les articles
-            </h2>
-          </div>
-          <div className="mx-auto mt-4 h-1 w-20 bg-black"></div>
+
+      {/* Products Section */}
+      <section className="mx-auto max-w-7xl px-4 py-14 md:px-8 md:py-20">
+        <div className="mb-10 text-center">
+          <h2 
+            className="text-3xl font-bold italic tracking-tight text-gray-900 md:text-4xl"
+            style={{ fontFamily: "'Playfair Display', 'Amiri', serif" }}
+          >
+            Tous les articles
+          </h2>
+          <p className="mt-3 text-sm text-neutral-500 max-w-md mx-auto">
+            Chaque pièce est choisie avec exigence pour révéler votre style
+          </p>
         </div>
         <ProductGrid products={products} perPage={8} />
       </section>
+
+      {/* Brand Stats Section */}
+      <BrandStats />
+
+      {/* Testimonials Section */}
+      <Testimonials />
+
+      {/* FAQ Section */}
+      <FAQ />
+
+      {/* Newsletter Section */}
+      <Newsletter />
     </div>
   );
 }

@@ -13,7 +13,7 @@ interface Props {
   ctaHref?: string;
 }
 
-export function Hero({ title, subtitle, mediaUrls, interval = 5, ctaHref = "/categorie/caftans" }: Props) {
+export function Hero({ title, subtitle, mediaUrls, interval = 5, ctaHref = "/" }: Props) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
 
@@ -35,11 +35,16 @@ export function Hero({ title, subtitle, mediaUrls, interval = 5, ctaHref = "/cat
     setCurrentIndex((prev) => (prev - 1 + mediaUrls.length) % mediaUrls.length);
   };
 
+  const scrollToContent = () => {
+    const el = document.getElementById("features-section");
+    if (el) el.scrollIntoView({ behavior: "smooth" });
+  };
+
   if (!mediaUrls || mediaUrls.length === 0) return null;
 
   return (
     <section className="relative overflow-hidden group">
-      <div className="relative w-full h-[60vh] md:h-[80vh]">
+      <div className="relative w-full h-[85vh] md:h-[90vh]">
         {mediaUrls.map((url, idx) => {
           const isVideo = url.startsWith("data:video/") || /\.(mp4|mov|webm|ogg)(\?|$)/i.test(url) || url.includes("video");
           return (
@@ -71,24 +76,57 @@ export function Hero({ title, subtitle, mediaUrls, interval = 5, ctaHref = "/cat
           );
         })}
 
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent z-20" />
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/10 z-20" />
         
-        <div className="absolute inset-0 flex flex-col items-center justify-center px-4 text-center text-white z-30">
-          {subtitle && (
-            <p className="mb-3 text-xs uppercase tracking-[0.4em] md:text-sm">
-              {subtitle}
-            </p>
-          )}
-          <h1 className="font-serif text-4xl font-bold uppercase tracking-tight md:text-6xl lg:text-7xl drop-shadow-md">
-            {title}
+        {/* Content */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center text-white z-30">
+          {/* Subtitle badge */}
+          <p className="mb-5 text-[10px] uppercase tracking-[0.5em] md:text-xs opacity-90 font-medium">
+            {subtitle || "Nouvelle Collection"}
+          </p>
+          
+          {/* Main title */}
+          <h1 
+            className="font-serif text-3xl font-bold tracking-tight md:text-5xl lg:text-6xl drop-shadow-lg leading-tight"
+            style={{ fontFamily: "'Playfair Display', 'Amiri', serif" }}
+          >
+            Bienvenue chez<br />
+            <span className="italic">Boutique Milina</span>
           </h1>
+          
+          {/* Description */}
+          <p className="mt-4 max-w-md text-sm opacity-80 leading-relaxed md:text-base">
+            Une sélection exclusive, pensée pour révéler votre élégance.
+          </p>
+          
+          {/* CTA Button */}
           <Link
             href={ctaHref}
-            className="mt-8 inline-flex items-center gap-2 rounded-full bg-white px-8 py-3 text-sm font-semibold uppercase tracking-wider text-black transition-smooth hover:bg-black hover:text-white"
+            className="mt-8 inline-flex items-center gap-2 bg-black/80 backdrop-blur-sm border border-white/20 px-10 py-3.5 text-xs font-bold uppercase tracking-[0.3em] text-white transition-all duration-300 hover:bg-white hover:text-black"
           >
-            Shop Now <IconArrowRight size={16} />
+            Shop Now <span className="ml-1">→</span>
           </Link>
         </div>
+
+        {/* Scroll indicator */}
+        <button
+          onClick={scrollToContent}
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-2 text-white/70 hover:text-white transition-colors cursor-pointer"
+        >
+          <span className="text-[9px] uppercase tracking-[0.4em] font-medium">Défiler</span>
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            className="animate-scroll-bounce"
+          >
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </button>
 
         {/* Controls */}
         {mediaUrls.length > 1 && (

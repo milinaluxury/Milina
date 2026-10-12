@@ -8,6 +8,12 @@
   --soft: #f7f7f7;
   --accent: #0a0a0a;
   --accent-fg: #ffffff;
+  --warm-beige: #f5f0eb;
+  --warm-cream: #faf7f4;
+  --gold: #c9a96e;
+  --gold-light: #e8d5b0;
+  --burgundy: #6b1d2a;
+  --dark-navy: #1a1a2e;
 }
 
 @theme inline {
@@ -19,7 +25,7 @@
   --color-accent: var(--accent);
   --color-accent-fg: var(--accent-fg);
   --font-sans: "Inter", "Helvetica Neue", Arial, sans-serif;
-  --font-serif: "Cormorant Garamond", "Playfair Display", Georgia, serif;
+  --font-serif: "Playfair Display", "Cormorant Garamond", Georgia, serif;
 }
 
 html,
@@ -259,4 +265,139 @@ button:focus {
   50% {
     box-shadow: 0 4px 24px rgba(37, 211, 102, 0.6);
   }
+}
+
+/* ===== NEW FIGMA DESIGN STYLES ===== */
+
+/* Hero scroll bounce */
+@keyframes scrollBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(8px);
+  }
+}
+.animate-scroll-bounce {
+  animation: scrollBounce 2s ease-in-out infinite;
+}
+
+/* Fade in up for scroll reveal */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+/* Stagger children animations */
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.2s; }
+.stagger-3 { animation-delay: 0.3s; }
+.stagger-4 { animation-delay: 0.4s; }
+
+/* Counter animation */
+@keyframes countUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-count-up {
+  animation: countUp 0.8s ease-out forwards;
+}
+
+/* Star rating glow */
+@keyframes starGlow {
+  0%, 100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.3);
+  }
+}
+
+/* FAQ accordion */
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease-out, padding 0.3s ease-out;
+}
+.faq-answer.open {
+  max-height: 300px;
+}
+
+/* Gradient text */
+.gradient-text-gold {
+  background: linear-gradient(135deg, #c9a96e, #e8d5b0, #c9a96e);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Subtle border glow on brand section */
+.brand-border-glow {
+  border: 1px solid rgba(201, 169, 110, 0.3);
+  box-shadow: inset 0 0 30px rgba(201, 169, 110, 0.05);
+}
+
+/* Newsletter input focus */
+.newsletter-input:focus {
+  outline: none;
+  border-color: #0a0a0a;
+}
+
+/* Product card badge styles */
+.badge-bestseller {
+  background: #6b1d2a;
+  color: #ffffff;
+}
+.badge-nouveau {
+  background: #c9a96e;
+  color: #ffffff;
+}
+.badge-limited {
+  background: #1a1a2e;
+  color: #ffffff;
+}
+
+/* Testimonial card */
+.testimonial-card {
+  position: relative;
+  overflow: hidden;
+}
+.testimonial-card::before {
+  content: '"';
+  position: absolute;
+  top: -10px;
+  left: 10px;
+  font-size: 80px;
+  font-family: "Playfair Display", Georgia, serif;
+  color: rgba(201, 169, 110, 0.15);
+  line-height: 1;
+}
+
+/* Divider with ornament */
+.ornament-divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.ornament-divider::before,
+.ornament-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(0,0,0,0.15), transparent);
 }
