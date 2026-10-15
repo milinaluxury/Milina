@@ -11,9 +11,46 @@ interface Props {
   mediaUrls: string[];
   interval?: number;
   ctaHref?: string;
+  ctaText?: string;
+  ctaVisible?: boolean;
+  fontFamily?: string;
+  titleColor?: string;
+  subtitleColor?: string;
+  ctaBgColor?: string;
+  ctaTextColor?: string;
+  ctaBorderColor?: string;
+  titleItalic?: boolean;
 }
 
-export function Hero({ title, subtitle, mediaUrls, interval = 5, ctaHref = "/" }: Props) {
+export function Hero({
+  title,
+  subtitle,
+  mediaUrls: rawMediaUrls,
+  interval = 5,
+  ctaHref = "/",
+  ctaText = "Shop Now",
+  ctaVisible = true,
+  fontFamily = "'Playfair Display', serif",
+  titleColor = "#ffffff",
+  subtitleColor = "#ffffff",
+  ctaBgColor = "rgba(0,0,0,0.8)",
+  ctaTextColor = "#ffffff",
+  ctaBorderColor = "rgba(255,255,255,0.2)",
+  titleItalic = true,
+}: Props) {
+  // Defensive normalization: ensure mediaUrls is a flat array of clean string URLs
+  const mediaUrls: string[] = (Array.isArray(rawMediaUrls) ? rawMediaUrls : [rawMediaUrls])
+    .flat(Infinity as any)
+    .map((item: any) => {
+      if (typeof item === "string") return item.trim();
+      if (item && typeof item === "object") {
+        if ("url" in item && typeof item.url === "string") return item.url.trim();
+        if ("src" in item && typeof item.src === "string") return item.src.trim();
+      }
+      return "";
+    })
+    .filter((u): u is string => typeof u === "string" && u.length > 0);
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
 
@@ -28,10 +65,12 @@ export function Hero({ title, subtitle, mediaUrls, interval = 5, ctaHref = "/" }
   }, [isPlaying, mediaUrls.length, interval]);
 
   const handleNext = () => {
+    if (mediaUrls.length === 0) return;
     setCurrentIndex((prev) => (prev + 1) % mediaUrls.length);
   };
 
   const handlePrev = () => {
+    if (mediaUrls.length === 0) return;
     setCurrentIndex((prev) => (prev - 1 + mediaUrls.length) % mediaUrls.length);
   };
 
@@ -45,8 +84,12 @@ export function Hero({ title, subtitle, mediaUrls, interval = 5, ctaHref = "/" }
   return (
     <section className="relative overflow-hidden group">
       <div className="relative w-full h-[85vh] md:h-[90vh]">
-        {mediaUrls.map((url, idx) => {
-          const isVideo = url.startsWith("data:video/") || /\.(mp4|mov|webm|ogg)(\?|$)/i.test(url) || url.includes("video");
+        {mediaUrls.map((item, idx) => {
+          const url = typeof item === "string" ? item : String(item || "");
+          const isVideo =
+            url.startsWith("data:video/") ||
+            /\.(mp4|mov|webm|ogg)(\?|$)/i.test(url) ||
+            url.includes("video");
           return (
             <div
               key={idx}
@@ -82,31 +125,44 @@ export function Hero({ title, subtitle, mediaUrls, interval = 5, ctaHref = "/" }
         {/* Content */}
         <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center text-white z-30">
           {/* Subtitle badge */}
-          <p className="mb-5 text-[10px] uppercase tracking-[0.5em] md:text-xs opacity-90 font-medium">
-            {subtitle || "Nouvelle Collection"}
-          </p>
+          {subtitle && subtitle.trim() !== "" && (
+            <p
+              className="mb-5 text-[10px] uppercase tracking-[0.5em] md:text-xs opacity-90 font-medium"
+              style={{ color: subtitleColor || "#ffffff" }}
+            >
+              {subtitle}
+            </p>
+          )}
           
           {/* Main title */}
           <h1 
-            className="font-serif text-3xl font-bold tracking-tight md:text-5xl lg:text-6xl drop-shadow-lg leading-tight"
-            style={{ fontFamily: "'Playfair Display', 'Amiri', serif" }}
+            className="text-3xl font-bold tracking-tight md:text-5xl lg:text-6xl drop-shadow-lg leading-tight"
+            style={{
+              fontFamily: fontFamily || "'Playfair Display', 'Amiri', serif",
+              color: titleColor || "#ffffff",
+            }}
           >
-            Bienvenue chez<br />
-            <span className="italic">Boutique Milina</span>
+            {titleItalic ? (
+              <span className="italic">{title || "Boutique Milina"}</span>
+            ) : (
+              <span>{title || "Boutique Milina"}</span>
+            )}
           </h1>
-          
-          {/* Description */}
-          <p className="mt-4 max-w-md text-sm opacity-80 leading-relaxed md:text-base">
-            Une sélection exclusive, pensée pour révéler votre élégance.
-          </p>
-          
+
           {/* CTA Button */}
-          <Link
-            href={ctaHref}
-            className="mt-8 inline-flex items-center gap-2 bg-black/80 backdrop-blur-sm border border-white/20 px-10 py-3.5 text-xs font-bold uppercase tracking-[0.3em] text-white transition-all duration-300 hover:bg-white hover:text-black"
-          >
-            Shop Now <span className="ml-1">→</span>
-          </Link>
+          {ctaVisible !== false && (
+            <Link
+              href={ctaHref}
+              className="mt-8 inline-flex items-center gap-2 backdrop-blur-sm border px-10 py-3.5 text-xs font-bold uppercase tracking-[0.3em] transition-all duration-300 hover:opacity-90 hover:scale-105"
+              style={{
+                backgroundColor: ctaBgColor || "rgba(0,0,0,0.8)",
+                color: ctaTextColor || "#ffffff",
+                borderColor: ctaBorderColor || "rgba(255,255,255,0.2)",
+              }}
+            >
+              {ctaText || "Shop Now"} <span className="ml-1">→</span>
+            </Link>
+          )}
         </div>
 
         {/* Scroll indicator */}

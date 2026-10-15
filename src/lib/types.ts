@@ -76,3 +76,16 @@ export interface OrderDTO {
   paymentMethod: "cod" | "card" | "transfer";
   createdAt: string;
 }
+
+export interface CustomerReviewDTO {
+  id: string;
+  imageUrl: string;
+  clientName?: string;
+  city?: string;
+  rating?: number;
+  caption?: string;
+  platform?: "whatsapp" | "instagram" | "facebook" | "autre";
+  isActive: boolean;
+  sortOrder?: number;
+  createdAt?: string;
+}

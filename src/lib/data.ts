@@ -12,7 +12,9 @@ import type {
   CategoryDTO,
   ProductDTO,
   OrderDTO,
+  CustomerReviewDTO,
 } from "./types";
+
 
 // ============ Seed ============
 const SEED_CATEGORIES = [
@@ -501,4 +503,93 @@ export async function getSupabaseIntegration() {
     .where(eq(integrations.name, "supabase"))
     .limit(1);
   return rows[0] ?? null;
+}
+
+export const DEFAULT_CUSTOMER_REVIEWS: CustomerReviewDTO[] = [
+  {
+    id: "rev_1",
+    imageUrl: "https://jamsuwadufnsnespyhyp.supabase.co/storage/v1/object/public/media/review-1.jpg",
+    clientName: "Sarah M.",
+    city: "Alger",
+    platform: "whatsapp",
+    rating: 5,
+    caption: "Caftan royal brodé reçu à Alger : Qualité juste WOW et livraison ultra rapide !",
+    isActive: true,
+    sortOrder: 0,
+    createdAt: "2026-03-10T11:20:00.000Z",
+  },
+  {
+    id: "rev_2",
+    imageUrl: "https://jamsuwadufnsnespyhyp.supabase.co/storage/v1/object/public/media/review-2.jpg",
+    clientName: "Yasmine K.",
+    city: "Oran",
+    platform: "instagram",
+    rating: 5,
+    caption: "Robe en soie livrée à Oran : Tissu fluide et sublime, emballage de luxe avec sac Milina",
+    isActive: true,
+    sortOrder: 1,
+    createdAt: "2026-03-12T14:35:00.000Z",
+  },
+  {
+    id: "rev_3",
+    imageUrl: "https://jamsuwadufnsnespyhyp.supabase.co/storage/v1/object/public/media/review-3.jpg",
+    clientName: "Amina T.",
+    city: "Constantine",
+    platform: "whatsapp",
+    rating: 5,
+    caption: "Commande express à Constantine : Boîte cadeau prestigieuse avec broderie exceptionnelle",
+    isActive: true,
+    sortOrder: 2,
+    createdAt: "2026-03-14T15:30:00.000Z",
+  },
+];
+
+export async function getCustomerReviews(): Promise<{
+  reviews: CustomerReviewDTO[];
+  title: string;
+  subtitle: string;
+  visible: boolean;
+}> {
+  try {
+    const rows = await db
+      .select()
+      .from(settings)
+      .where(sql`${settings.key} IN ('customer_reviews', 'reviews_section_title', 'reviews_section_subtitle', 'reviews_section_visible')`);
+    
+    const map = new Map(rows.map((r) => [r.key, r.value]));
+    let reviews: CustomerReviewDTO[] = [];
+    const rawReviews = map.get("customer_reviews");
+    if (rawReviews) {
+      if (typeof rawReviews === "string") {
+        try {
+          reviews = JSON.parse(rawReviews);
+        } catch {
+          reviews = [];
+        }
+      } else if (Array.isArray(rawReviews)) {
+        reviews = rawReviews as CustomerReviewDTO[];
+      }
+    }
+
+    if (!reviews || reviews.length === 0) {
+      reviews = DEFAULT_CUSTOMER_REVIEWS;
+    }
+
+    const title = (map.get("reviews_section_title") as string) || "Ce que disent nos clientes";
+    const subtitle =
+      (map.get("reviews_section_subtitle") as string) ||
+      "Découvrez les retours et captures réels de nos clientes satisfaites";
+    const visible =
+      map.get("reviews_section_visible") !== false &&
+      map.get("reviews_section_visible") !== "false";
+
+    return { reviews, title, subtitle, visible };
+  } catch (err) {
+    return {
+      reviews: DEFAULT_CUSTOMER_REVIEWS,
+      title: "Ce que disent nos clientes",
+      subtitle: "Découvrez les retours et captures réels de nos clientes satisfaites",
+      visible: true,
+    };
+  }
 }

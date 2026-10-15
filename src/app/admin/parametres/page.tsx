@@ -1,14 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { IconCheck, IconTrash } from "@/components/store/Icons";
 
 const FIELDS = [
   { key: "site_name", label: "Nom du site", type: "text" },
   { key: "site_tagline", label: "Slogan", type: "text" },
   { key: "shipping_notice", label: "Bandeau d'annonce", type: "text" },
-  { key: "hero_title", label: "Titre Hero", type: "text" },
-  { key: "hero_subtitle", label: "Sous-titre Hero", type: "text" },
   { key: "contact_email", label: "Email de contact", type: "email" },
   { key: "contact_phone", label: "Téléphone", type: "tel" },
   { key: "contact_address", label: "Adresse", type: "text" },
@@ -98,22 +97,14 @@ export default function AdminSettingsPage() {
           <div className="mt-8 border-t border-neutral-100 pt-6">
             <h2 className="mb-4 font-serif text-xl font-bold">Images & Logos</h2>
             <div className="grid gap-5 md:grid-cols-2">
-              <div className="md:col-span-2 rounded-lg border border-neutral-100 p-4">
-                <MultiMediaField
-                  label="Médias du Hero (Images & Vidéos)"
-                  value={settings["hero_image"] ?? ""}
-                  onChange={(v) => setSettings({ ...settings, hero_image: v })}
-                />
-                <label className="mt-4 block w-full max-w-xs">
-                  <span className="admin-label">Délai de changement automatique (secondes)</span>
-                  <input
-                    type="number"
-                    min="1"
-                    value={settings["hero_interval"] ?? "5"}
-                    onChange={(e) => setSettings({ ...settings, hero_interval: e.target.value })}
-                    className="admin-input"
-                  />
-                </label>
+              <div className="md:col-span-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-xl border border-neutral-200 bg-neutral-50 p-4">
+                <div>
+                  <h3 className="font-semibold text-sm text-neutral-900">Bannière Hero (Diaporama, Vidéos & Textes)</h3>
+                  <p className="text-xs text-neutral-500 mt-0.5">La gestion complète de la bannière Hero se trouve désormais dans son propre onglet dédié.</p>
+                </div>
+                <Link href="/admin/hero" className="admin-btn text-xs shrink-0">
+                  Gérer la Bannière Hero →
+                </Link>
               </div>
               <div>
                 <ImageField

@@ -10,6 +10,8 @@ import {
   IconTag,
   IconUsers,
   IconMessage,
+  IconStar,
+  IconImage,
   IconSettings,
   IconPalette,
   IconLogout,
@@ -24,11 +26,13 @@ import {
 
 const NAV = [
   { href: "/admin", label: "Tableau de bord", icon: IconDashboard },
+  { href: "/admin/hero", label: "Bannière Hero", icon: IconImage },
   { href: "/admin/produits", label: "Produits", icon: IconBox },
   { href: "/admin/categories", label: "Catégories", icon: IconTag },
   { href: "/admin/commandes", label: "Commandes", icon: IconTrend },
   { href: "/admin/clients", label: "Clients", icon: IconUsers },
   { href: "/admin/messages", label: "Messages", icon: IconMessage },
+  { href: "/admin/avis", label: "Avis clients", icon: IconStar },
   { href: "/admin/tarifs-livraison", label: "Tarifs Livraison", icon: IconSettings },
   { href: "/admin/parametres", label: "Paramètres", icon: IconSettings },
   { href: "/admin/apparence", label: "Couleurs", icon: IconPalette },

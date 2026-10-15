@@ -170,35 +170,8 @@ export function StoreChrome({ children, categories, settings }: Props) {
             </button>
           </div>
         </div>
-
-        {/* Category nav */}
-        <nav className="border-t border-black/5" style={{ backgroundColor: 'var(--categories-bar-bg, #ffffff)' }}>
-          <div className="mx-auto max-w-7xl px-4 md:px-8">
-            <div className="no-scrollbar flex items-center gap-2 overflow-x-auto py-3">
-              {navCategories.map((c) => {
-                const isActive =
-                  pathname === "/" && c.slug === "tout"
-                    ? true
-                    : pathname === `/categorie/${c.slug}`;
-                return (
-                  <Link
-                    key={c.slug}
-                    href={c.slug === "tout" ? "/" : `/categorie/${c.slug}`}
-                    className={`shrink-0 whitespace-nowrap rounded-full border px-4 py-1.5 text-sm transition-smooth`}
-                    style={{
-                      backgroundColor: isActive ? 'var(--category-active-bg, #000000)' : 'var(--category-item-bg, #ffffff)',
-                      color: isActive ? 'var(--category-active-text, #ffffff)' : 'var(--category-item-text, #000000)',
-                      borderColor: isActive ? 'var(--category-active-bg, #000000)' : 'rgba(0,0,0,0.1)'
-                    }}
-                  >
-                    {c.name}
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-        </nav>
       </header>
+
 
       {/* Search overlay */}
       {searchOpen && (
