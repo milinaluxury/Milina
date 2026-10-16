@@ -124,16 +124,6 @@ export function Hero({
         
         {/* Content */}
         <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center text-white z-30">
-          {/* Subtitle badge */}
-          {subtitle && subtitle.trim() !== "" && (
-            <p
-              className="mb-5 text-[10px] uppercase tracking-[0.5em] md:text-xs opacity-90 font-medium"
-              style={{ color: subtitleColor || "#ffffff" }}
-            >
-              {subtitle}
-            </p>
-          )}
-          
           {/* Main title */}
           <h1 
             className="text-3xl font-bold tracking-tight md:text-5xl lg:text-6xl drop-shadow-lg leading-tight"
@@ -148,6 +138,16 @@ export function Hero({
               <span>{title || "Boutique Milina"}</span>
             )}
           </h1>
+
+          {/* Subtitle */}
+          {subtitle && subtitle.trim() !== "" && (
+            <p
+              className="mt-5 text-[10px] uppercase tracking-[0.5em] md:text-xs opacity-90 font-medium"
+              style={{ color: subtitleColor || "#ffffff" }}
+            >
+              {subtitle}
+            </p>
+          )}
 
           {/* CTA Button */}
           {ctaVisible !== false && (

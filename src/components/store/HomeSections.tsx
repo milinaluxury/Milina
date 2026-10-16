@@ -40,7 +40,7 @@ export function BrandStats() {
   ];
 
   return (
-    <section ref={sectionRef} className="relative overflow-hidden" style={{ backgroundColor: "#111827" }}>
+    <section ref={sectionRef} className="relative overflow-hidden" style={{ backgroundColor: "#000000" }}>
       {/* Decorative border */}
       <div className="mx-4 md:mx-8 my-0">
         <div className="brand-border-glow rounded-none py-14 px-6 md:py-20 md:px-12 text-center">

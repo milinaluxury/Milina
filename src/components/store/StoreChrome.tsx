@@ -1,6 +1,6 @@
 "use client";
 
-import { type ReactNode, useState, useEffect } from "react";
+import { type ReactNode, useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { CategoryDTO } from "@/lib/types";
@@ -19,7 +19,7 @@ import {
   IconWhatsApp,
   IconTikTok,
 } from "@/components/store/Icons";
-import { Store as LucideStore, ShoppingCart as LucideShoppingCart } from "lucide-react";
+import { Store as LucideStore, ShoppingCart as LucideShoppingCart, Heart as LucideHeart } from "lucide-react";
 import { useCart } from "./CartProvider";
 import { CartDrawer } from "./CartDrawer";
 import { MenuDrawer } from "./MenuDrawer";
@@ -31,12 +31,74 @@ interface Props {
   settings: Record<string, unknown>;
 }
 
+/* Inline header search results dropdown */
+function HeaderSearchResults({ query, onSelect }: { query: string; onSelect: () => void }) {
+  const [results, setResults] = useState<{ slug: string; name: string; price: number; image: string }[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const term = query.trim();
+    if (!term) { setResults([]); return; }
+    const ctrl = new AbortController();
+    setLoading(true);
+    fetch(`/api/products?search=${encodeURIComponent(term)}`, { signal: ctrl.signal })
+      .then((r) => r.json())
+      .then((data) => {
+        setResults(
+          (data.products ?? []).slice(0, 6).map((p: any) => ({
+            slug: p.slug, name: p.name, price: p.price, image: p.images?.[0] ?? "",
+          }))
+        );
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+    return () => ctrl.abort();
+  }, [query]);
+
+  if (loading) return <p className="px-4 py-3 text-xs text-neutral-500">Recherche...</p>;
+  if (results.length === 0) return <p className="px-4 py-3 text-xs text-neutral-500">Aucun résultat</p>;
+
+  return (
+    <ul className="divide-y divide-neutral-100">
+      {results.map((r) => (
+        <li key={r.slug}>
+          <Link
+            href={`/produit/${r.slug}`}
+            onClick={onSelect}
+            className="flex items-center gap-3 px-4 py-2.5 transition-colors hover:bg-neutral-50"
+          >
+            {r.image && (
+              <img src={r.image} alt={r.name} className="h-10 w-10 rounded-md object-cover" />
+            )}
+            <div className="flex-1 min-w-0">
+              <div className="text-sm font-bold text-black truncate">{r.name}</div>
+              <div className="text-xs font-bold text-neutral-600">{r.price.toLocaleString("fr-DZ")} DA</div>
+            </div>
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 export function StoreChrome({ children, categories, settings }: Props) {
   const { itemCount, openCart } = useCart();
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [announcementIdx, setAnnouncementIdx] = useState(0);
+  const [headerSearchQuery, setHeaderSearchQuery] = useState("");
+  const [headerSearchFocused, setHeaderSearchFocused] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const dropdownTimeout = useRef<NodeJS.Timeout | null>(null);
   const pathname = usePathname();
+
+  const handleDropdownEnter = (name: string) => {
+    if (dropdownTimeout.current) clearTimeout(dropdownTimeout.current);
+    setOpenDropdown(name);
+  };
+  const handleDropdownLeave = () => {
+    dropdownTimeout.current = setTimeout(() => setOpenDropdown(null), 150);
+  };
 
   const shippingNotice =
     (settings.shipping_notice as string) ?? "Livraison Rapide 58 Wilayas";
@@ -110,60 +172,151 @@ export function StoreChrome({ children, categories, settings }: Props) {
       {/* Header */}
       <header className="sticky top-0 z-40 border-b border-neutral-100 backdrop-blur" style={{ backgroundColor: 'var(--header-bg, rgba(255,255,255,0.95))' }}>
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-8">
+          {/* Left: hamburger (mobile only) + Logo */}
           <div className="flex items-center gap-3">
             <button
               type="button"
               aria-label="Menu"
               onClick={() => setMenuOpen(true)}
-              className="rounded-full p-2 transition-smooth hover:bg-black/5"
+              className="rounded-full p-2 transition-smooth hover:bg-black/5 md:hidden"
               style={{ color: 'var(--header-icon, #000000)' }}
             >
               <IconMenu size={22} />
             </button>
+            <Link
+              href="/"
+              className="flex items-center"
+            >
+              {(settings.logo_image as string) ? (
+                <img 
+                  src={settings.logo_image as string} 
+                  alt="Logo" 
+                  className={settings.logo_size ? "w-auto object-contain" : "h-10 md:h-12 lg:h-14 w-auto object-contain transition-all"} 
+                  style={settings.logo_size ? { height: `${Math.round(Number(settings.logo_size) * 1.25)}px` } : undefined}
+                />
+              ) : (
+                <span className="font-serif font-black text-xl md:text-2xl uppercase tracking-[0.2em] text-black">
+                  MILINA
+                </span>
+              )}
+            </Link>
+          </div>
+
+          {/* Center: two dropdown tabs (desktop only) */}
+          <nav className="hidden md:flex items-center gap-7">
+            {/* Pages dropdown */}
+            <div
+              className="relative"
+              onMouseEnter={() => handleDropdownEnter('pages')}
+              onMouseLeave={handleDropdownLeave}
+            >
+              <button
+                className="flex items-center gap-2 px-3 py-2 text-xs md:text-sm font-bold uppercase tracking-[0.2em] transition-all duration-200 hover:opacity-70"
+                style={{ color: 'var(--header-icon, #000000)' }}
+                onClick={() => setOpenDropdown(openDropdown === 'pages' ? null : 'pages')}
+              >
+                Pages
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className={`transition-transform duration-200 ${openDropdown === 'pages' ? 'rotate-180' : ''}`}><polyline points="6 9 12 15 18 9" /></svg>
+              </button>
+              {openDropdown === 'pages' && (
+                <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 z-50">
+                  <div className="min-w-[190px] rounded-xl border border-neutral-100 bg-white shadow-xl py-2 animate-in fade-in slide-in-from-top-1 duration-200">
+                    <Link href="/" onClick={() => setOpenDropdown(null)} className="flex items-center gap-3 px-5 py-2.5 text-xs font-bold text-neutral-800 hover:bg-neutral-50 hover:text-black transition-colors">
+                      <span className="text-base">🏠</span> Accueil
+                    </Link>
+                    <Link href="/contact" onClick={() => setOpenDropdown(null)} className="flex items-center gap-3 px-5 py-2.5 text-xs font-bold text-neutral-800 hover:bg-neutral-50 hover:text-black transition-colors">
+                      <span className="text-base">✉️</span> Contact
+                    </Link>
+                    <Link href="/cgu" onClick={() => setOpenDropdown(null)} className="flex items-center gap-3 px-5 py-2.5 text-xs font-bold text-neutral-800 hover:bg-neutral-50 hover:text-black transition-colors">
+                      <span className="text-base">📄</span> CGV
+                    </Link>
+                    <Link href="/favoris" onClick={() => setOpenDropdown(null)} className="flex items-center gap-3 px-5 py-2.5 text-xs font-bold text-neutral-800 hover:bg-neutral-50 hover:text-black transition-colors">
+                      <span className="text-base">❤️</span> Favoris
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Catégories dropdown */}
+            <div
+              className="relative"
+              onMouseEnter={() => handleDropdownEnter('categories')}
+              onMouseLeave={handleDropdownLeave}
+            >
+              <button
+                className="flex items-center gap-2 px-3 py-2 text-xs md:text-sm font-bold uppercase tracking-[0.2em] transition-all duration-200 hover:opacity-70"
+                style={{ color: 'var(--header-icon, #000000)' }}
+                onClick={() => setOpenDropdown(openDropdown === 'categories' ? null : 'categories')}
+              >
+                Catégories
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className={`transition-transform duration-200 ${openDropdown === 'categories' ? 'rotate-180' : ''}`}><polyline points="6 9 12 15 18 9" /></svg>
+              </button>
+              {openDropdown === 'categories' && (
+                <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 z-50">
+                  <div className="min-w-[210px] rounded-xl border border-neutral-100 bg-white shadow-xl py-2 animate-in fade-in slide-in-from-top-1 duration-200">
+                    <Link href="/" onClick={() => setOpenDropdown(null)} className="flex items-center gap-3 px-5 py-2.5 text-xs font-black uppercase tracking-wider text-black hover:bg-neutral-50 transition-colors border-b border-neutral-100">
+                      Tout voir
+                    </Link>
+                    {visibleCategories.map((cat) => (
+                      <Link
+                        key={cat.slug}
+                        href={`/categorie/${cat.slug}`}
+                        onClick={() => setOpenDropdown(null)}
+                        className={`flex items-center gap-3 px-5 py-2.5 text-xs font-bold transition-colors hover:bg-neutral-50 ${
+                          pathname === `/categorie/${cat.slug}` ? 'text-black bg-neutral-100' : 'text-neutral-700 hover:text-black'
+                        }`}
+                      >
+                        {cat.name}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </nav>
+
+          {/* Right: search bar + cart */}
+          <div className="flex items-center gap-3">
+            {/* Inline search (desktop) */}
+            <div className="hidden md:flex items-center relative">
+              <input
+                type="text"
+                placeholder="Rechercher..."
+                className="w-44 lg:w-60 rounded-full border border-neutral-300 bg-neutral-50/80 pl-9 pr-4 py-2 text-xs font-bold placeholder:font-bold placeholder:text-neutral-500 outline-none transition-all duration-300 focus:w-60 lg:focus:w-72 focus:border-black focus:bg-white"
+                value={headerSearchQuery}
+                onChange={(e) => setHeaderSearchQuery(e.target.value)}
+                onFocus={() => setHeaderSearchFocused(true)}
+                onBlur={() => setTimeout(() => setHeaderSearchFocused(false), 200)}
+              />
+              <IconSearch size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500 pointer-events-none" />
+              {/* Search results dropdown */}
+              {headerSearchFocused && headerSearchQuery.trim() && (
+                <div className="absolute top-full right-0 mt-2 w-80 max-h-80 overflow-y-auto rounded-xl border border-neutral-200 bg-white shadow-xl z-50">
+                  <HeaderSearchResults query={headerSearchQuery} onSelect={() => { setHeaderSearchQuery(""); setHeaderSearchFocused(false); }} />
+                </div>
+              )}
+            </div>
+            {/* Search icon (mobile) */}
             <button
               type="button"
               aria-label="Rechercher"
               onClick={() => setSearchOpen(true)}
-              className="rounded-full p-2 transition-smooth hover:bg-black/5"
+              className="rounded-full p-2 transition-smooth hover:bg-black/5 md:hidden"
               style={{ color: 'var(--header-icon, #000000)' }}
             >
-              <IconSearch size={20} />
+              <IconSearch size={22} />
             </button>
-          </div>
-
-          <Link
-            href="/"
-            className="absolute left-1/2 -translate-x-1/2 transform flex items-center justify-center"
-          >
-            {(settings.logo_image as string) ? (
-              <img 
-                src={settings.logo_image as string} 
-                alt="Logo" 
-                className={settings.logo_size ? "w-auto object-contain" : "h-8 md:h-10 w-auto object-contain"} 
-                style={settings.logo_size ? { height: `${settings.logo_size}px` } : undefined}
-              />
-            ) : null}
-          </Link>
-
-          <div className="flex items-center gap-1">
-            <Link
-              href="/favoris"
-              aria-label="Favoris"
-              className="rounded-full p-2 transition-smooth hover:bg-black/5"
-              style={{ color: 'var(--header-icon, #000000)' }}
-            >
-              <IconHeart size={20} />
-            </Link>
             <button
               type="button"
               aria-label="Panier"
               onClick={openCart}
-              className="relative rounded-full p-2 transition-smooth hover:bg-black/5"
+              className="relative rounded-full p-2.5 transition-smooth hover:bg-black/5"
               style={{ color: 'var(--header-icon, #000000)' }}
             >
-              <IconBag size={20} />
+              <IconBag size={22} />
               {itemCount > 0 && (
-                <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-black text-[10px] font-medium text-white">
+                <span className="absolute -right-0.5 -top-0.5 flex h-4.5 w-4.5 min-w-[18px] items-center justify-center rounded-full bg-black text-[10px] font-black text-white shadow">
                   {itemCount}
                 </span>
               )}
@@ -381,6 +534,10 @@ export function StoreChrome({ children, categories, settings }: Props) {
         <Link href="/" className="group flex flex-col items-center gap-1 transition-all active:scale-95">
           <LucideStore size={22} strokeWidth={1.5} className="transition-transform group-hover:-translate-y-0.5" />
           <span className="text-[10px] font-bold uppercase tracking-wider">Boutique</span>
+        </Link>
+        <Link href="/favoris" className="group flex flex-col items-center gap-1 transition-all active:scale-95">
+          <LucideHeart size={22} strokeWidth={1.5} className="transition-transform group-hover:-translate-y-0.5" />
+          <span className="text-[10px] font-bold uppercase tracking-wider">Favoris</span>
         </Link>
         <Link href="/commander" className="group flex flex-col items-center gap-1 transition-all active:scale-95">
           <div className="relative transition-transform group-hover:-translate-y-0.5">

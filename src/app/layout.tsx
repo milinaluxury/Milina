@@ -7,17 +7,22 @@ import { ensureSeedData } from "@/lib/data";
 import { getCategories, getAllSettings } from "@/lib/data";
 
 export const metadata: Metadata = {
-  title: "Milina Luxury — Boutique Femme | Caftans, Robes & Kimonos",
+  title: "BOUTIQUE MILINA - WORLD OF LUXURY",
   description:
-    "Milina Luxury, votre boutique en ligne de prêt-à-porter féminin. Découvrez nos caftans, robes, kimonos et accessoires. Livraison rapide 58 wilayas, paiement à la livraison.",
+    "Boutique Milina Luxury — L'univers d'une élégance intemporelle, où chaque pièce est choisie avec exigence pour révéler votre style. Élégance • Raffinement • Exclusivité",
   keywords: [
-    "milina",
-    "boutique femme",
-    "caftan",
-    "robe",
-    "kimono",
-    "abaya",
-    "algérie",
+    "milina luxury",
+    "boutique milina",
+    "mode femme algérie",
+    "caftan luxe",
+    "robe de soirée",
+    "kimono femme",
+    "abaya élégante",
+    "prêt-à-porter féminin",
+    "livraison 58 wilayas",
+    "boutique en ligne algérie",
+    "tenue femme chic",
+    "mode luxe",
   ],
 };
 
